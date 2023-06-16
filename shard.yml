@@ -8,6 +8,10 @@ targets:
   guppi:
     main: src/guppi.cr
 
+dependencies:
+  openai:
+    github: lancecarlson/openai.cr
+
 crystal: 1.7.2
 
 license: MIT
