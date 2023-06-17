@@ -1,11 +1,12 @@
 require "option_parser"
 require "openai"
 
+Log.setup(:debug)
+
 require "./file_tree"
 require "./agent"
 require "./file_reader_agent"
-require "./plan_agent"
-require "./task_agent"
+require "./decision_agent"
 
 # require "./file_tree_generator"
 # require "./code_generator"
@@ -32,7 +33,10 @@ module Guppi
 
     file_reader_agent = FileReaderAgent.new(openai_client)
     contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
-    pp contents
+
+    decision_agent = DecisionAgent.new(openai_client)
+    next_task = decision_agent.get_next_task(contents, project_file)
+    pp next_task
 
     # plan_agent = PlanAgent.new(openai_client)
     # plan_agent.interact(project_file, plan_file)

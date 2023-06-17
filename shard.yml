@@ -10,7 +10,8 @@ targets:
 
 dependencies:
   openai:
-    github: lancecarlson/openai.cr
+    # github: lancecarlson/openai.cr
+    path: ../openai.cr
 
 crystal: 1.7.2
 

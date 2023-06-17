@@ -1,6 +1,6 @@
 version: 2.0
 shards:
   openai:
-    git: https://github.com/lancecarlson/openai.cr.git
-    version: 0.2.2+git.commit.5e22291e4dfb1c0090fdeef8393c5530c24612f0
+    path: ../openai.cr
+    version: 0.2.2
 
