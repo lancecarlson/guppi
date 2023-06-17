@@ -7,6 +7,7 @@ require "./file_tree"
 require "./agent"
 require "./file_reader_agent"
 require "./decision_agent"
+require "./file_creator_agent"
 
 # require "./file_tree_generator"
 # require "./code_generator"
@@ -34,8 +35,17 @@ module Guppi
     file_reader_agent = FileReaderAgent.new(openai_client)
     contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
 
+    File.write("context.txt", contents)
+
     decision_agent = DecisionAgent.new(openai_client)
-    next_task = decision_agent.get_next_task(contents, project_file)
+    next_task = decision_agent.get_next_task(project_file, contents)
+
+    case next_task.action
+    when "CREATE_FILE"
+      FileCreatorAgent.new(openai_client).create_file(project_file, contents, next_task)
+    else
+      raise "Unknown action: #{next_task.action}"
+    end
 
     pp next_task
   end
