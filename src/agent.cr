@@ -29,8 +29,8 @@ module Guppi
       add_message("assistant", content)
     end
 
-    def chat(params : Hash(String, String) = {} of String => String, &block : String -> Nil)
-      params["stream"] = "true"
+    def chat(params : Hash(String, String | Bool | Float32 | Int32) = {} of String => Bool | String, &block : String -> Nil)
+      params["stream"] = true
 
       @client.chat(@model, @messages, params) do |chunk|
         choice = chunk.choices.first

@@ -1,13 +1,16 @@
 require "option_parser"
 require "openai"
 
+require "./file_tree"
 require "./agent"
-require "./plan_generator"
-require "./tasks"
-#require "./file_tree_generator"
-#require "./code_generator"
-#require "./test_runner"
-#require "./command_runner"
+require "./file_reader_agent"
+require "./plan_agent"
+require "./task_agent"
+
+# require "./file_tree_generator"
+# require "./code_generator"
+# require "./test_runner"
+# require "./command_runner"
 
 module Guppi
   def self.initialize_openai_client
@@ -27,58 +30,16 @@ module Guppi
       parser.on("-h", "--help", "Show help") { puts parser; exit }
     end
 
-    generate_plan(project_file, plan_file, openai_client)
+    file_reader_agent = FileReaderAgent.new(openai_client)
+    contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
+    pp contents
 
-    tasks = Tasks.from_file(plan_file)
-    tasks.process_tasks(openai_client)
-  end
+    # plan_agent = PlanAgent.new(openai_client)
+    # plan_agent.interact(project_file, plan_file)
 
-  def self.generate_plan(project_file, plan_file, openai_client)
-    if File.exists?(plan_file)
-      puts "Plan exists:"
-      puts File.read(plan_file)
-      puts "Continue or regenerate? (c/r)"
-      loop do
-        user_input = gets
-        if user_input
-          user_input = user_input.chomp.downcase
-          if user_input == "c"
-            break
-          elsif user_input == "r"
-            File.delete(plan_file)
-            generate_plan(project_file, plan_file, openai_client)
-          end
-        end
-      end
-
-      return
-    end
-
-    feedback = nil
-
-    loop do
-      File.open(plan_file, "w") do |file|
-        plan = PlanGenerator.new(openai_client).generate(project_file, file)
-      end
-
-      puts "\n"
-      puts "Does this plan look good? (y/n)"
-
-      user_input = gets
-      if user_input
-        user_input = user_input.chomp.downcase
-        if user_input == "y"
-          break
-        else
-          puts "Enter feedback for the generator:"
-          feedback = gets
-          if feedback
-            feedback = feedback.chomp
-            # Use the feedback value as desired, possibly as input to your generator
-          end
-        end
-      end
-    end
+    # tasks = TaskAgent.from_file(plan_file)
+    # task_agent = TaskAgent.new(openai_client)
+    # task_agent.process_tasks(tasks)
   end
 end
 
