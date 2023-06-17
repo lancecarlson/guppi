@@ -1,7 +1,7 @@
 require "option_parser"
 require "openai"
 
-Log.setup(:debug)
+Log.setup(:info)
 
 require "./file_tree"
 require "./agent"
@@ -36,14 +36,8 @@ module Guppi
 
     decision_agent = DecisionAgent.new(openai_client)
     next_task = decision_agent.get_next_task(contents, project_file)
+
     pp next_task
-
-    # plan_agent = PlanAgent.new(openai_client)
-    # plan_agent.interact(project_file, plan_file)
-
-    # tasks = TaskAgent.from_file(plan_file)
-    # task_agent = TaskAgent.new(openai_client)
-    # task_agent.process_tasks(tasks)
   end
 end
 

@@ -1,6 +1,6 @@
 module Guppi
   class DecisionAgent < Agent
-    def initialize(client : OpenAIClient, model : String = "gpt-3.5-turbo-16k")
+    def initialize(client : OpenAIClient, model : String = "gpt-4")
       super
     end
 
@@ -14,6 +14,7 @@ module Guppi
       prompt += contents
 
       prompt += "Given the project description and the contents of the relevant files, please provide the most reasonable next task that can be implemented to achieve the goals set in the project description:\n\n"
+      prompt += "Include the following fields in your YAML object: title, description, action (CREATE_FILE, MODIFY_FILE, DELETE_FILE, RUN_COMMAND), command (if action is RUN_COMMAND)\n\n"
 
       prompt += "Next task:\n\n"
       prompt += "```yaml"
@@ -21,7 +22,11 @@ module Guppi
       prompt
     end
 
-    def get_next_task(contents : String, project_file : String)
+    record Task, title : String, description : String, action : String, command : String do
+      include YAML::Serializable
+    end
+
+    def get_next_task(contents : String, project_file : String) : Task
       prompt = build_prompt(contents, project_file)
       add_user_message(prompt)
 
@@ -31,7 +36,7 @@ module Guppi
         next_task += response
       end
 
-      next_task.strip
+      Task.from_yaml(next_task.strip)
     end
   end
 end
