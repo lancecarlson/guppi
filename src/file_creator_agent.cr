@@ -22,7 +22,7 @@ module Guppi
 
         file_result = false
 
-        file = File.open(filepath, "w") do |file|
+        File.open(filepath, "w") do |file|
           chat do |response|
             begin
               file.print(response)
@@ -37,7 +37,7 @@ module Guppi
 
         file_result
       else
-        DecisionAgent.new(client).get_next_task(project_file, contents).filepath
+        DecisionAgent.new(client).get_next_task(project_file, contents)
         false
       end
     end

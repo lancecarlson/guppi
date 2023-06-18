@@ -8,11 +8,7 @@ require "./agent"
 require "./file_reader_agent"
 require "./decision_agent"
 require "./file_creator_agent"
-
-# require "./file_tree_generator"
-# require "./code_generator"
-# require "./test_runner"
-# require "./command_runner"
+require "./file_modifier_agent"
 
 module Guppi
   def self.initialize_openai_client
@@ -43,6 +39,8 @@ module Guppi
     case next_task.action
     when "CREATE_FILE"
       FileCreatorAgent.new(openai_client).create_file(project_file, contents, next_task)
+    when "MODIFY_FILE"
+      FileModifierAgent.new(openai_client).modify_file(project_file, contents, next_task)
     else
       raise "Unknown action: #{next_task.action}"
     end
