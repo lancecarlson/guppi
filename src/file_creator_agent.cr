@@ -27,6 +27,31 @@ module Guppi
           end
         end
 
+        # check if file starts with triple backticks and remove them if it does
+        File.open(filepath, "r+") do |file|
+          content = file.gets_to_end
+          if content.starts_with?("```")
+            content = content.lines[1..-1].join("\n") # Remove the first line
+          end
+
+          file.rewind
+          file.print(content)
+          file.truncate(content.size)
+        end
+
+        # check if file ends with triple backticks and remove them if it does
+        File.open(filepath, "r+") do |file|
+          if file.size >= 3
+            file.seek(-3, IO::Seek::End)
+            buffer = Bytes.new(3)
+            file.read(buffer)
+            if String.new(buffer) == "```"
+              file.seek(-3, IO::Seek::End)
+              file.truncate(file.size - 3)
+            end
+          end
+        end
+
         return true
       end
 
