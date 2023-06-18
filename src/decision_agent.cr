@@ -2,6 +2,7 @@ module Guppi
   class DecisionAgent < Agent
     def initialize(client : OpenAIClient, model : String = "gpt-4")
       super
+      @completed_tasks_file = "tasks.md"
     end
 
     def build_prompt(project_file : String, contents : String)
@@ -10,10 +11,13 @@ module Guppi
       prompt = "Project description:\n\n"
       prompt += project_description + "\n\n"
 
+      prompt += "Completed tasks:\n\n"
+      prompt += get_completed_tasks
+
       prompt += "Contents of the relevant files:\n\n"
       prompt += contents
 
-      prompt += "Given the project description and the contents of the relevant files, please provide the most reasonable next task that can be implemented to achieve the goals set in the project description:\n\n"
+      prompt += "Given the project description, completed tasks, and the contents of the relevant files, please provide the most reasonable next task that can be implemented to achieve the goals set in the project description:\n\n"
       prompt += "Include the following fields in your YAML object: title, description, action (CREATE_FILE, MODIFY_FILE, DELETE_FILE, RUN_COMMAND), command (if action is RUN_COMMAND), filepath\n\n"
 
       prompt += "Next task:\n\n"
@@ -36,7 +40,22 @@ module Guppi
         next_task += response
       end
 
-      Task.from_yaml(next_task.strip)
+      task = Task.from_yaml(next_task.strip)
+      write_completed_task(task) if task
+      task
+    end
+
+    private def write_completed_task(task : Task)
+      File.open(@completed_tasks_file, "a") do |file|
+        file.puts(task.to_yaml)
+      end
+    end
+
+    private def get_completed_tasks
+      return "No completed tasks yet." unless File.exists?(@completed_tasks_file)
+
+      contents = File.read(@completed_tasks_file)
+      "```\n" + contents + "\n```\n"
     end
   end
 end

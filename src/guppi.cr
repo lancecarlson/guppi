@@ -37,6 +37,8 @@ module Guppi
       decision_agent = DecisionAgent.new(openai_client)
       next_task = decision_agent.get_next_task(project_file, contents)
 
+      break if next_task.nil? # Exit the loop if there are no more tasks
+
       case next_task.action
       when "CREATE_FILE"
         FileCreatorAgent.new(openai_client).create_file(project_file, contents, next_task)
