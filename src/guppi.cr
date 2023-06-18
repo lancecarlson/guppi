@@ -28,24 +28,24 @@ module Guppi
       parser.on("-h", "--help", "Show help") { puts parser; exit }
     end
 
-    file_reader_agent = FileReaderAgent.new(openai_client)
-    contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
+    loop do
+      file_reader_agent = FileReaderAgent.new(openai_client)
+      contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
 
-    File.write("context.txt", contents)
+      File.write("context.txt", contents)
 
-    decision_agent = DecisionAgent.new(openai_client)
-    next_task = decision_agent.get_next_task(project_file, contents)
+      decision_agent = DecisionAgent.new(openai_client)
+      next_task = decision_agent.get_next_task(project_file, contents)
 
-    case next_task.action
-    when "CREATE_FILE"
-      FileCreatorAgent.new(openai_client).create_file(project_file, contents, next_task)
-    when "MODIFY_FILE"
-      FileModifierAgent.new(openai_client).modify_file(project_file, contents, next_task)
-    else
-      raise "Unknown action: #{next_task.action}"
+      case next_task.action
+      when "CREATE_FILE"
+        FileCreatorAgent.new(openai_client).create_file(project_file, contents, next_task)
+      when "MODIFY_FILE"
+        FileModifierAgent.new(openai_client).modify_file(project_file, contents, next_task)
+      else
+        raise "Unknown action: #{next_task.action}"
+      end
     end
-
-    pp next_task
   end
 end
 
