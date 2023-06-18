@@ -19,12 +19,15 @@ module Guppi
         message = "Project description:\n\n#{project_description}"
         message += "Related file contents:\n\n#{contents}"
         message += "Original file contents:\n#{file_contents}\n\n"
-        message += "Please modify the code in this file: '#{filepath}':\n```\n"
+        message += "Please ONLY modify the code for just this one file: '#{filepath}':\n```\n"
         message += "\n\nCurrent task:\n\n#{task.to_yaml}\n\n"
+        message += "```\n"
 
         add_user_message(message)
 
-        edits_filepath = filepath + ".edits"
+        file_ext = File.extname(filepath)
+        file_name = File.basename(filepath, file_ext)
+        edits_filepath = File.join(File.dirname(filepath), "#{file_name}.edits#{file_ext}")
 
         File.open(edits_filepath, "w") do |file|
           chat do |response|

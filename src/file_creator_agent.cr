@@ -20,26 +20,17 @@ module Guppi
 
         add_user_message(message)
 
-        file_result = false
-
         File.open(filepath, "w") do |file|
           chat do |response|
-            begin
-              file.print(response)
-              print response
-              file_result = true
-            rescue e
-              Log.warn { "Failed to write to file '#{filepath}': #{e.message}" }
-              file_result = false
-            end
+            file.print(response)
+            print response
           end
         end
 
-        file_result
-      else
-        DecisionAgent.new(client).get_next_task(project_file, contents)
-        false
+        return true
       end
+
+      false
     end
   end
 end
