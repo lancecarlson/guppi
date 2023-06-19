@@ -1,6 +1,6 @@
 # Guppi
 
-A semi-autonomous coding assistant.
+Guppi is a semi-autonomous coding assistant designed to facilitate and streamline your coding process.
 
 ## Installation
 
@@ -9,21 +9,37 @@ make install
 ```
 
 ## Usage
+
+Start by creating a `project.md` file and writing your project or feature specifications there. Being more descriptive yields better results. A convenient way to do this is to construct it in Chat GPT first. You may find it useful to follow a format similar to the one below, especially for new projects:
+
+```
+Project: guppi
+Description: A semi-autonomous coding assistant.
+Language: Crystal Lang
+Dependencies: openai.cr
+
+<Feature Specification>
+```
+
 To use guppi, run the following command in your terminal:
 
 `guppi`
 
-This will start guppi. Guppi will prompt you for the next task to complete based on the project description in your `project.md` file and the contents of relevant files. 
+This command initiates Guppi. Guppi then generates the next task to complete, based on the project description in your `project.md` file, as well as the content of relevant files.
 
-When modifying a file, guppi will create a .edits.extension file and ask if you want to apply the changes. 
+When you modify a file, Guppi will create a .edits.extension file and ask if you want to apply the changes.
 
 ## Development
+
+To run Guppi during the development phase, use the following command:
 
 ```
 crystal run src/guppi.cr
 ```
 
 ## Contributing
+
+If you'd like to contribute to Guppi's development, follow these steps:
 
 1. Fork it (<https://github.com/lancecarlson/guppi/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
