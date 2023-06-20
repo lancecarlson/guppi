@@ -2,7 +2,7 @@ require "openai"
 
 module Guppi
   class FileModifierAgent < Agent
-    def initialize(client : OpenAIClient, model : String = "gpt-3.5-turbo")
+    def initialize(client : OpenAIClient, model : String = "gpt-4")
       super
     end
 

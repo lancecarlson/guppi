@@ -5,7 +5,8 @@ Guppi is a semi-autonomous coding assistant designed to facilitate and streamlin
 ## Installation
 
 ```
-make install
+make build
+sudo make install
 ```
 
 ## Usage
@@ -28,6 +29,12 @@ To use guppi, run the following command in your terminal:
 This command initiates Guppi. Guppi then generates the next task to complete, based on the project description in your `project.md` file, as well as the content of relevant files.
 
 When you modify a file, Guppi will create a .edits.extension file and ask if you want to apply the changes.
+
+By default gpt-4 is used. If you want to override and use another model like gpt-3.5-turbo-16k, use the -m flag:
+
+```
+guppi -m gpt-3.5-turbo-16k
+```
 
 ## Development
 
