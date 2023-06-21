@@ -14,18 +14,21 @@ module Guppi
       openai_client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
 
       loop do
-        puts "Reading related files:\n"
+        puts "\e[32mReading related files:\e[0m"
         file_reader_agent = FileReaderAgent.new(openai_client, default_model)
         contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
 
         File.write("context.txt", contents)
 
-        puts "\n---"
+        puts "\n\e[31m---\e[0m"
 
+        puts "\e[32mThinking about the next task:\e[0m"
         decision_agent = DecisionAgent.new(openai_client, default_model)
         next_task = decision_agent.get_next_task(project_file, contents)
 
         break if next_task.nil? # Exit the loop if there are no more tasks
+
+        puts "\n\e[31m---\e[0m"
 
         case next_task.action
         when "CREATE_FILE"

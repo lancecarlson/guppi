@@ -14,6 +14,8 @@ module Guppi
       project_description = File.read(project_file)
 
       if filepath = task.filepath
+        # Check if the file exists, create it if not
+        File.write(filepath, "") unless File.exists?(filepath)
         file_contents = File.read(filepath)
 
         message = "Project description:\n\n#{project_description}"
