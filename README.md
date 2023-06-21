@@ -2,7 +2,7 @@
 
 Guppi is a semi-autonomous coding assistant designed to facilitate and streamline your coding process.
 
-GUPPI (or General Unit Primary Peripheral Interface) is from the Bobiverse series.
+GUPPI (or General Unit Primary Peripheral Interface) was named after a "character" from the Bobiverse series.
 
 ## Installation
 
