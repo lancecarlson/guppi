@@ -4,9 +4,10 @@ module Guppi
   class Agent
     alias OpenAIClient = OpenAI::Client
 
-    getter :client, :messages, :model
+    getter :prompts, :client, :messages, :model
 
-    def initialize(client : OpenAIClient, model : String = "gpt-3.5-turbo")
+    def initialize(prompts : Crinja, client : OpenAIClient, model : String = "gpt-3.5-turbo")
+      @prompts = prompts
       @client = client
       @messages = [] of NamedTuple(role: String, content: String)
       @model = model
@@ -43,6 +44,11 @@ module Guppi
 
     def end_conversation
       @messages = [] of NamedTuple(role: String, content: String)
+    end
+
+    def render(template_name, context)
+      template = prompts.get_template("#{template_name}.txt.j2")
+      template.render(context)
     end
   end
 end

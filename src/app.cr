@@ -1,4 +1,5 @@
 require "openai"
+require "crinja"
 
 require "./file_tree"
 require "./agent"
@@ -12,10 +13,12 @@ module Guppi
   class App
     def self.run(project_file : String, plan_file : String, default_model : String)
       openai_client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
+      prompts = Crinja.new
+      prompts.loader = Crinja::Loader::FileSystemLoader.new("prompts/")
 
       loop do
         puts "\e[32mReading related files:\e[0m"
-        file_reader_agent = FileReaderAgent.new(openai_client, default_model)
+        file_reader_agent = FileReaderAgent.new(prompts, openai_client, default_model)
         contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
 
         File.write("context.txt", contents)
@@ -23,7 +26,7 @@ module Guppi
         puts "\n\e[31m---\e[0m"
 
         puts "\e[32mThinking about the next task:\e[0m"
-        decision_agent = DecisionAgent.new(openai_client, default_model)
+        decision_agent = DecisionAgent.new(prompts, openai_client, default_model)
         next_task = decision_agent.get_next_task(project_file, contents)
 
         break if next_task.nil? # Exit the loop if there are no more tasks
@@ -32,9 +35,9 @@ module Guppi
 
         case next_task.action
         when "CREATE_FILE"
-          FileCreatorAgent.new(openai_client, default_model).create_file(project_file, contents, next_task)
+          FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, next_task)
         when "MODIFY_FILE"
-          FileModifierAgent.new(openai_client, default_model).modify_file(project_file, contents, next_task)
+          FileModifierAgent.new(prompts, openai_client, default_model).modify_file(project_file, contents, next_task)
         when "RUN_COMMAND"
           CommandRunner.run_command(next_task)
         else

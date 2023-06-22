@@ -1,6 +1,10 @@
 version: 2.0
 shards:
+  crinja:
+    git: https://github.com/straight-shoota/crinja.git
+    version: 0.8.1
+
   openai:
-    path: ../openai.cr
-    version: 0.2.2
+    git: https://github.com/lancecarlson/openai.cr.git
+    version: 0.2.3+git.commit.3fe52200f1eb9b0e0490eeb81b48f82ddccebf27
 

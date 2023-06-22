@@ -11,6 +11,8 @@ targets:
 dependencies:
   openai:
     github: lancecarlson/openai.cr
+  crinja:
+    github: straight-shoota/crinja
 
 crystal: 1.7.2
 

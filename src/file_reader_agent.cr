@@ -1,10 +1,11 @@
 require "openai"
 require "yaml"
+require "crinja"
 
 module Guppi
   class FileReaderAgent < Agent
-    def initialize(client : OpenAIClient, model : String = "gpt-4")
-      super
+    def initialize(prompts : Crinja, client : OpenAIClient, model : String = "gpt-4")
+      super(prompts, client, model)
     end
 
     def what_files(project_file : String, file_tree : FileTree)
@@ -27,17 +28,12 @@ module Guppi
     end
 
     private def prepare_message(project_file : String, file_tree : FileTree)
-      message = "Here is the project description:\n\n"
-      message += File.read(project_file) + "\n\n"
+      project_description = File.read(project_file)
 
-      message += "Here are the current files in the project:"
-      message += file_tree.to_s
-
-      message += "List the top files that I should read to figure out what to do next. Return only valid YAML of the full filepaths. Do not include reasoning or annotations. "
-      message += "Keep in mind that we have a context window of 7500 tokens.\n"
-      message += "```yaml"
-
-      message
+      return render("file_reader_agent", {
+        "project_description" => project_description,
+        "file_tree"           => file_tree.to_s,
+      })
     end
 
     private def read_files(file_paths : Array(String)) : String

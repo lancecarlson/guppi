@@ -1,29 +1,19 @@
 module Guppi
   class DecisionAgent < Agent
-    def initialize(client : OpenAIClient, model : String = "gpt-4")
-      super
+    def initialize(prompts : Crinja, client : OpenAIClient, model : String = "gpt-4")
+      super(prompts, client, model)
       @completed_tasks_file = "tasks.md"
     end
 
     def build_prompt(project_file : String, contents : String)
       project_description = File.read(project_file)
+      completed_tasks = get_completed_tasks
 
-      prompt = "Project description:\n\n"
-      prompt += project_description + "\n\n"
-
-      prompt += "Completed tasks:\n\n"
-      prompt += get_completed_tasks
-
-      prompt += "Contents of the relevant files:\n\n"
-      prompt += contents
-
-      prompt += "Given the project description, completed tasks, and the contents of the relevant files, please provide the most reasonable next task that can be implemented to achieve the goals set in the project description:\n\n"
-      prompt += "Include the following fields in your YAML object: title, description, action (CREATE_FILE, MODIFY_FILE, DELETE_FILE, RUN_COMMAND), command (if action is RUN_COMMAND), filepath\n\n"
-
-      prompt += "Next task:\n\n"
-      prompt += "```yaml"
-
-      prompt
+      return render("design_agent", {
+        "project_description" => project_description,
+        "completed_tasks"     => completed_tasks,
+        "contents"            => contents,
+      })
     end
 
     record Task, title : String, description : String, action : String, command : String | Nil, filepath : String | Nil do

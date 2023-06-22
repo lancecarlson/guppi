@@ -2,7 +2,7 @@ require "openai"
 
 module Guppi
   class FileModifierAgent < Agent
-    def initialize(client : OpenAIClient, model : String = "gpt-4")
+    def initialize(prompts : Crinja, client : OpenAIClient, model : String = "gpt-4")
       super
     end
 
@@ -18,11 +18,12 @@ module Guppi
         File.write(filepath, "") unless File.exists?(filepath)
         file_contents = File.read(filepath)
 
-        message = "Project description:\n\n#{project_description}"
-        message += "Related file contents:\n\n#{contents}"
-        message += "Original file contents:\n#{file_contents}\n\n"
-        message += "\n\nCurrent task:\n\n#{task.to_yaml}\n\n"
-        message += "Please ONLY modify the code for just this one file: '#{filepath}':\n```\n"
+        message = render("file_modifier_agent", {
+          "project_description" => project_description,
+          "contents"            => contents,
+          "file_contents"       => file_contents,
+          "task"                => task,
+        })
 
         add_user_message(message)
 
