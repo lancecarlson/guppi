@@ -5,6 +5,7 @@ require "./file_tree"
 require "./agent"
 require "./command_runner"
 require "./file_reader_agent"
+require "./planning_agent"
 require "./decision_agent"
 require "./file_creator_agent"
 require "./file_modifier_agent"
@@ -24,6 +25,10 @@ module Guppi
         File.write("context.txt", contents)
 
         puts "\n\e[31m---\e[0m"
+
+        puts "\e[32mCompiling plan:\e[0m"
+        plan_agent = PlanningAgent.new(prompts, openai_client, default_model)
+        plan = plan_agent.plan(project_file, contents)
 
         puts "\e[32mThinking about the next task:\e[0m"
         decision_agent = DecisionAgent.new(prompts, openai_client, default_model)

@@ -1,6 +1,4 @@
 require "./spec_helper"
-require "../src/file_modifier_agent.cr"
-require "../src/decision_agent.cr"
 
 def create_temporary_project_file(path)
   File.open(path, "w") do |file|

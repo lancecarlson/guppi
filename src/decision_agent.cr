@@ -1,3 +1,5 @@
+require "yaml"
+
 module Guppi
   class DecisionAgent < Agent
     def initialize(prompts : Crinja, client : OpenAIClient, model : String = "gpt-4")
@@ -9,7 +11,7 @@ module Guppi
       project_description = File.read(project_file)
       completed_tasks = get_completed_tasks
 
-      return render("design_agent", {
+      return render("action", {
         "project_description" => project_description,
         "completed_tasks"     => completed_tasks,
         "contents"            => contents,

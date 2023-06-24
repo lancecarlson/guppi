@@ -30,14 +30,20 @@ module Guppi
       add_message("assistant", content)
     end
 
-    def chat(params : Hash(String, String | Bool | Float32 | Int32) = {} of String => Bool | String, &block : String -> Nil)
-      params["stream"] = true
+    def chat(options : Hash | Nil = nil, &block : String -> Nil)
+      if options.nil?
+        params = {"stream" => true}
+      else
+        params = options.merge({"stream" => true})
+      end
 
       @client.chat(@model, @messages, params) do |chunk|
         choice = chunk.choices.first
         delta = choice.delta
-        if delta.has_key?("content")
-          block.call(delta["content"])
+        if function_call = delta.function_call
+          block.call(function_call.arguments)
+        elsif content = delta.content
+          block.call(content)
         end
       end
     end

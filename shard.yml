@@ -13,6 +13,8 @@ dependencies:
     github: lancecarlson/openai.cr
   crinja:
     github: straight-shoota/crinja
+  json-schema:
+    github: spider-gazelle/json-schema
 
 crystal: 1.7.2
 
