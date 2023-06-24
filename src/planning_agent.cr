@@ -1,6 +1,13 @@
 require "openai"
 
 module Guppi
+  enum Action
+    CREATE_FILE
+    MODIFY_FILE
+    DELETE_FILE
+    RUN_COMMAND
+  end
+
   class Step
     include JSON::Serializable
 
@@ -14,10 +21,13 @@ module Guppi
     getter thought : String
 
     @[JSON::Field(description: "Action is the next step to take")]
-    getter action : String
+    getter action : Action
 
     @[JSON::Field(description: "Observation is the result of the action")]
     getter observation : String
+
+    @[JSON::Field(description: "The filepath of the file that needs to be created, modified, or deleted. Nil if the action is RUN_COMMAND")]
+    getter filepath : String?
   end
 
   record Steps, steps : Array(Step) do
@@ -39,7 +49,8 @@ module Guppi
 
       output = ""
       params = {
-        "functions" => [plan],
+        "temperature" => 0,
+        "functions"   => [plan],
       }
       chat(params) do |response|
         print response

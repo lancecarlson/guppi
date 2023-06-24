@@ -7,18 +7,18 @@ module Guppi
       super(prompts, client, model)
     end
 
-    def create_file(project_file : String, contents : String, task : DecisionAgent::Task, persona : String? = nil) : Bool
+    def create_file(project_file : String, contents : String, step : Step, persona : String? = nil) : Bool
       if persona
         add_system_message(persona)
       end
 
       project_description = File.read(project_file)
 
-      if filepath = task.filepath
+      if filepath = step.filepath
         context = {
           "project_description" => project_description,
           "contents"            => contents,
-          "task"                => task.to_yaml,
+          "step"                => step.to_json,
         }
         message = render("file_creator_gent", context)
 

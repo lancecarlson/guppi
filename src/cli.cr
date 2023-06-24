@@ -4,7 +4,7 @@ require "openai"
 module Guppi
   class CLI
     def self.run(args)
-      default_model = "gpt-4"
+      default_model = "gpt-4-0613"
 
       parser = OptionParser.new do |parser|
         parser.banner = "Usage: guppi [options]"
@@ -22,7 +22,7 @@ module Guppi
       parser.parse(args)
 
       project_file = "project.md"
-      plan_file = "plan.txt"
+      plan_file = "plan.json"
 
       puts "Guppi: A semi-autonomous coding assistant.\n"
 

@@ -12,8 +12,8 @@ module Guppi
       super(prompts, client, model)
     end
 
-    def what_files(project_file : String, file_tree : FileTree)
-      message = prepare_message(project_file, file_tree)
+    def what_files(project_file : String, file_tree : FileTree, current_step : Step | Nil)
+      message = prepare_message(project_file, file_tree, current_step)
 
       add_user_message(message)
 
@@ -29,16 +29,22 @@ module Guppi
     end
 
     def what_files_contents(project_file : String, file_tree : FileTree)
-      file_paths = what_files(project_file, file_tree)
+      file_paths = what_files(project_file, file_tree, nil)
       read_files(file_paths.files)
     end
 
-    private def prepare_message(project_file : String, file_tree : FileTree)
+    def what_files_contents(project_file : String, file_tree : FileTree, current_step : Step | Nil)
+      file_paths = what_files(project_file, file_tree, current_step)
+      read_files(file_paths.files)
+    end
+
+    private def prepare_message(project_file : String, file_tree : FileTree, current_step : Step | Nil)
       project_description = File.read(project_file)
 
       return render("relevant_files", {
         "project_description" => project_description,
         "file_tree"           => file_tree.to_s,
+        "current_step"        => current_step.to_json,
       })
     end
 

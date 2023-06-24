@@ -17,36 +17,42 @@ module Guppi
       prompts = Crinja.new
       prompts.loader = Crinja::Loader::FileSystemLoader.new("prompts/")
 
-      loop do
+      puts "\e[32mReading related files:\e[0m"
+      file_reader_agent = FileReaderAgent.new(prompts, openai_client, default_model)
+      contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
+
+      File.write("context.txt", contents)
+
+      puts "\n\e[31m---\e[0m"
+
+      puts "\e[32mCompiling plan:\e[0m"
+      plan_agent = PlanningAgent.new(prompts, openai_client, default_model)
+      plan = plan_agent.plan(project_file, contents)
+
+      File.write(plan_file, plan.to_json)
+
+      plan.steps.each do |step|
+        puts "\n\e[32mNext step:\e[0m"
+        puts step.to_pretty_json
+
         puts "\e[32mReading related files:\e[0m"
+
         file_reader_agent = FileReaderAgent.new(prompts, openai_client, default_model)
-        contents = file_reader_agent.what_files_contents(project_file, FileTree.new)
-
-        File.write("context.txt", contents)
+        contents = file_reader_agent.what_files_contents(project_file, FileTree.new, step)
 
         puts "\n\e[31m---\e[0m"
 
-        puts "\e[32mCompiling plan:\e[0m"
-        plan_agent = PlanningAgent.new(prompts, openai_client, default_model)
-        plan = plan_agent.plan(project_file, contents)
-
-        puts "\e[32mThinking about the next task:\e[0m"
-        decision_agent = DecisionAgent.new(prompts, openai_client, default_model)
-        next_task = decision_agent.get_next_task(project_file, contents)
-
-        break if next_task.nil? # Exit the loop if there are no more tasks
-
-        puts "\n\e[31m---\e[0m"
-
-        case next_task.action
-        when "CREATE_FILE"
-          FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, next_task)
-        when "MODIFY_FILE"
-          FileModifierAgent.new(prompts, openai_client, default_model).modify_file(project_file, contents, next_task)
-        when "RUN_COMMAND"
-          CommandRunner.run_command(next_task)
+        case step.action
+        when Action::CREATE_FILE
+          raise "Not implemented"
+          # FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, step)
+        when Action::MODIFY_FILE
+          FileModifierAgent.new(prompts, openai_client, default_model).modify_file(project_file, contents, step)
+        when Action::RUN_COMMAND
+          raise "Not implemented"
+          # CommandRunner.run_command(step)
         else
-          raise "Unknown action: #{next_task.action}"
+          raise "Unknown action: #{step.action}"
         end
       end
     end
