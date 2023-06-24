@@ -1,9 +1,9 @@
 module Guppi
   class CommandRunner
-    def self.run_command(task : DecisionAgent::Task)
-      raise "Invalid action: #{task.action}" unless task.action == "RUN_COMMAND"
+    def self.run_command(step : Step)
+      raise "Invalid action: #{step.action}" unless step.action == "RUN_COMMAND"
 
-      if command = task.command
+      if command = step.command
         io = IO::Memory.new
         process = Process.new(command, output: io, error: io)
         status = process.wait

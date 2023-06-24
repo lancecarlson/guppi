@@ -44,13 +44,11 @@ module Guppi
 
         case step.action
         when Action::CREATE_FILE
-          raise "Not implemented"
-          # FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, step)
+          FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, step)
         when Action::MODIFY_FILE
           FileModifierAgent.new(prompts, openai_client, default_model).modify_file(project_file, contents, step)
         when Action::RUN_COMMAND
-          raise "Not implemented"
-          # CommandRunner.run_command(step)
+          CommandRunner.run_command(step)
         else
           raise "Unknown action: #{step.action}"
         end

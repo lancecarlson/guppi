@@ -28,6 +28,9 @@ module Guppi
 
     @[JSON::Field(description: "The filepath of the file that needs to be created, modified, or deleted. Nil if the action is RUN_COMMAND")]
     getter filepath : String?
+
+    @[JSON::Field(description: "The command to run. Nil if the action is not RUN_COMMAND")]
+    getter command : String?
   end
 
   record Steps, steps : Array(Step) do
@@ -60,12 +63,6 @@ module Guppi
       }
       chat(params) do |response|
         print response
-        unless valid_json?(output)
-          puts "\e[31m#Invalid JSON response, retrying...\e[0m"
-          puts "\e[31m#Response: #{response}\e[0m"
-
-          plan(project_file, relevant_files)
-        end
         output += response
       end
 
