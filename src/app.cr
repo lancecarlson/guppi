@@ -6,7 +6,6 @@ require "./agent"
 require "./command_runner"
 require "./file_reader_agent"
 require "./planning_agent"
-require "./decision_agent"
 require "./file_creator_agent"
 require "./file_modifier_agent"
 
@@ -47,6 +46,15 @@ module Guppi
           FileCreatorAgent.new(prompts, openai_client, default_model).create_file(project_file, contents, step)
         when Action::MODIFY_FILE
           FileModifierAgent.new(prompts, openai_client, default_model).modify_file(project_file, contents, step)
+        when Action::DELETE_FILE
+          if filepath = step.filepath
+            puts "Do you want to delete file: #{filepath} (y/n)"
+            answer = gets
+
+            if answer == "y"
+              File.delete(filepath)
+            end
+          end
         when Action::RUN_COMMAND
           CommandRunner.run_command(step)
         else

@@ -8,7 +8,7 @@ module Guppi
 
   class FileReaderAgent < Agent
     def initialize(prompts : Crinja, client : OpenAIClient, model : String)
-      model = "gpt-3.5-turbo-0613"
+      model = "gpt-3.5-turbo-16k-0613"
       super(prompts, client, model)
     end
 
