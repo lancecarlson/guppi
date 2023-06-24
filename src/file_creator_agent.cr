@@ -1,5 +1,4 @@
 require "openai"
-require "crinja"
 
 module Guppi
   class FileCreatorAgent < Agent
@@ -7,11 +6,7 @@ module Guppi
       super(prompts, client, model)
     end
 
-    def create_file(project_file : String, contents : String, step : Step, persona : String? = nil) : Bool
-      if persona
-        add_system_message(persona)
-      end
-
+    def create_file(project_file : String, contents : String, step : Step) : Bool
       project_description = File.read(project_file)
 
       if filepath = step.filepath

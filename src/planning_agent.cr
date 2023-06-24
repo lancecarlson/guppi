@@ -40,6 +40,12 @@ module Guppi
       super(prompts, client, model)
     end
 
+    def valid_json?(json : String) : Bool
+      return true unless json.size > 0
+
+      json[0] == '{'
+    end
+
     def plan(project_file : String, relevant_files : String)
       message = prepare_message(project_file, relevant_files)
 
@@ -54,6 +60,12 @@ module Guppi
       }
       chat(params) do |response|
         print response
+        unless valid_json?(output)
+          puts "\e[31m#Invalid JSON response, retrying...\e[0m"
+          puts "\e[31m#Response: #{response}\e[0m"
+
+          plan(project_file, relevant_files)
+        end
         output += response
       end
 

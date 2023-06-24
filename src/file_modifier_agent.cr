@@ -45,8 +45,15 @@ module Guppi
         diff_filepath = File.join(File.dirname(filepath), "#{file_name}#{file_ext}.diff")
         File.write(diff_filepath, changes.diff)
 
+        # Display the changes to the user
+        puts "\nChanges to file:\n"
+        system("cat #{diff_filepath}")
+
         if prompt_user_to_apply_changes(diff_filepath, filepath)
           apply_diff(diff_filepath, filepath)
+        else
+          puts "Changes not applied\n"
+          File.delete(diff_filepath)
         end
 
         return true
@@ -56,7 +63,7 @@ module Guppi
     end
 
     private def prompt_user_to_apply_changes(edits_filepath, filepath)
-      puts "Do you want to apply changes from edits file to original file?(y/n)\n"
+      puts "\nDo you want to apply changes from edits file to original file?(y/n)\n"
       response = gets
 
       return false unless response == "y"
